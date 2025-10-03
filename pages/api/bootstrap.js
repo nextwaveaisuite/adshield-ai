@@ -1,3 +1,3 @@
 export default function handler(req, res) {
-  res.status(200).json({ ok: true, message: "Serverless healthy (stub bootstrap)." });
+  res.status(200).json({ ok: true, message: "Serverless API working ✅" });
 }
