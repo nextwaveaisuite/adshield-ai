@@ -1,49 +1,32 @@
-# AdShield AI — Feature Pack F (Billing & Plans – Stripe)
+# AdShield AI — Feature Pack G (Credits & Quotas)
 
-This pack adds **paid plans** with Stripe Checkout and server-side gating.
+This pack adds **per-plan credits** with server-side enforcement and usage logging.
 
 ## What’s included
-- `/pricing` page with plan cards (Free, Pro, Enterprise)
-- `POST /api/stripe/create-checkout-session` to start checkout
-- `POST /api/stripe/webhook` to receive Stripe events
-- `lib/billing.js` helpers to read/write plan state in Supabase
-- Gating example on `/admin` and `/admin/compliance` (require at least Free; Pro-only areas are easy to extend)
+- Credits per plan (defaults): free=200/mo, pro=5000/mo, enterprise=unlimited
+- Auto-provision credits when a user first appears or plan changes
+- Server-side enforcement in APIs (`/api/collect` and `/api/validate-ad` cost 1 credit)
+- Admin shows remaining credits; upsell when low/out
+- Usage logs table for visibility
 
-## Environment Variables (Vercel → Settings → Environment Variables)
-- `STRIPE_SECRET_KEY` (required)
-- `STRIPE_WEBHOOK_SECRET` (required for webhooks)
-- `STRIPE_PRICE_PRO_MONTH` (Stripe Price ID for Pro monthly)
-- `STRIPE_PRICE_PRO_YEAR` (optional, Stripe Price ID for Pro yearly)
-- `NEXTAUTH_URL` (existing)
-- `NEXTAUTH_SECRET` (existing)
-- `SUPABASE_URL` (existing)
-- `SUPABASE_SERVICE_ROLE` (existing)
+## Environment (same as Pack F + earlier)
+- Stripe keys (if using Billing): `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_PRO_*`
+- Supabase: `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE`
+- NextAuth: `NEXTAUTH_URL`, `NEXTAUTH_SECRET`
+- Optional limits: `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`
 
-> Tip: In Stripe, create a **Product** (e.g. “AdShield AI Pro”) with one or more **Prices**. Copy the price IDs into the env vars above.
-
-## Database
-We store subscription status in a Supabase table:
-```sql
-create table if not exists public.subscriptions (
-  id bigserial primary key,
-  email text not null,
-  plan text not null default 'free',
-  status text not null default 'inactive',
-  current_period_end timestamptz,
-  stripe_customer_id text,
-  stripe_subscription_id text,
-  created_at timestamptz default now()
-);
-create index if not exists subs_email_idx on public.subscriptions (email);
+## Database (Supabase → SQL Editor)
+Run the included schema:
 ```
-The schema is included at `sql/schema.sql` (safe to run multiple times).
+-- see sql/schema.sql in this repo
+```
+
+## Behavior
+- On API calls, we look up the caller’s email (if authenticated) or `meta.user_id` (anonymous fallback) and decrement credits.
+- If out of credits, request fails with 402-like response and a link to `/pricing`.
+- Webhook upgrade to Pro auto-bumps allowance on next usage.
 
 ## Deploy
-1) Set env vars (Stripe + existing ones).
-2) In Supabase SQL Editor, run `sql/schema.sql`.
-3) Upload this pack (replace repo) → commit to `main` → Vercel deploys.
-4) In Stripe Dashboard → Developers → Webhooks, add an endpoint pointing to:
-   `https://YOUR_APP.vercel.app/api/stripe/webhook`
-   - Select events: `checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted`.
-   - Paste the signing secret into `STRIPE_WEBHOOK_SECRET`.
-5) Open `/pricing` and purchase Pro to test. Then visit `/admin` to see gating.
+1) Run `sql/schema.sql` in Supabase.
+2) Upload this pack (replace repo) → commit → Vercel deploys.
+3) If using Stripe, set env vars and webhook (same as Pack F).
