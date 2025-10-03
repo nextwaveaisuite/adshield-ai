@@ -1,3 +1,3 @@
 # AdShield AI — Pack G (Credits & Quotas)
 
-See sql/schema.sql for DB setup.
+Deploy on Vercel. Run `sql/schema.sql` in Supabase.
