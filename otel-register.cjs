@@ -1,0 +1,1 @@
+try { require('./otel.js'); } catch (e) { /* optional */ }
