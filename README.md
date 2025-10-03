@@ -1,23 +1,49 @@
-# AdShield AI — Feature Pack E (Abuse Detection + Rate Limiting)
+# AdShield AI — Feature Pack F (Billing & Plans – Stripe)
 
-This pack replaces the stubbed protection with real guardrails:
-- **Rate limiting** (token bucket) per IP+route with in-memory fallback and optional Upstash Redis.
-- **Abuse scoring** (IP/UA/frequency heuristics) with threshold-based blocking.
-- Works on Vercel Serverless; enables durable limits if you set Upstash env vars.
+This pack adds **paid plans** with Stripe Checkout and server-side gating.
 
-## Env Vars (optional for durable limits)
-- `UPSTASH_REDIS_REST_URL`
-- `UPSTASH_REDIS_REST_TOKEN`
+## What’s included
+- `/pricing` page with plan cards (Free, Pro, Enterprise)
+- `POST /api/stripe/create-checkout-session` to start checkout
+- `POST /api/stripe/webhook` to receive Stripe events
+- `lib/billing.js` helpers to read/write plan state in Supabase
+- Gating example on `/admin` and `/admin/compliance` (require at least Free; Pro-only areas are easy to extend)
 
-If these are omitted, the limiter uses an **in-memory TTL store** (good enough for small scale / single region).
+## Environment Variables (Vercel → Settings → Environment Variables)
+- `STRIPE_SECRET_KEY` (required)
+- `STRIPE_WEBHOOK_SECRET` (required for webhooks)
+- `STRIPE_PRICE_PRO_MONTH` (Stripe Price ID for Pro monthly)
+- `STRIPE_PRICE_PRO_YEAR` (optional, Stripe Price ID for Pro yearly)
+- `NEXTAUTH_URL` (existing)
+- `NEXTAUTH_SECRET` (existing)
+- `SUPABASE_URL` (existing)
+- `SUPABASE_SERVICE_ROLE` (existing)
+
+> Tip: In Stripe, create a **Product** (e.g. “AdShield AI Pro”) with one or more **Prices**. Copy the price IDs into the env vars above.
+
+## Database
+We store subscription status in a Supabase table:
+```sql
+create table if not exists public.subscriptions (
+  id bigserial primary key,
+  email text not null,
+  plan text not null default 'free',
+  status text not null default 'inactive',
+  current_period_end timestamptz,
+  stripe_customer_id text,
+  stripe_subscription_id text,
+  created_at timestamptz default now()
+);
+create index if not exists subs_email_idx on public.subscriptions (email);
+```
+The schema is included at `sql/schema.sql` (safe to run multiple times).
 
 ## Deploy
-1) Upload this pack to GitHub (replace existing files).
-2) (Optional) Add Upstash env vars in Vercel for durable/global limits.
-3) Deploy and test:
-   - `curl -X POST /api/collect` repeatedly to see 429 after the limit.
-   - Send requests without a User-Agent to increase the abuse score.
-
-## Notes
-- No changes needed to client. APIs import the enhanced `lib/rate` and `lib/abuse` automatically.
-- You can tune thresholds in `lib/abuse.js` and limiter settings in `lib/rate.js`.
+1) Set env vars (Stripe + existing ones).
+2) In Supabase SQL Editor, run `sql/schema.sql`.
+3) Upload this pack (replace repo) → commit to `main` → Vercel deploys.
+4) In Stripe Dashboard → Developers → Webhooks, add an endpoint pointing to:
+   `https://YOUR_APP.vercel.app/api/stripe/webhook`
+   - Select events: `checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted`.
+   - Paste the signing secret into `STRIPE_WEBHOOK_SECRET`.
+5) Open `/pricing` and purchase Pro to test. Then visit `/admin` to see gating.
