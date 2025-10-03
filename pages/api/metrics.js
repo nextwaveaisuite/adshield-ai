@@ -16,11 +16,12 @@ export default async function handler(req, res) {
   }
 
   await rateLimit(req, res);
-  if (isBlocked(req)) return res.status(429).json({ ok: false, error: 'Blocked' });
+  if (isBlocked(req)) {
+    return res.status(429).json({ ok: false, error: 'Blocked' });
+  }
 
-  const settings = await getAppSettings(process.env.METRICS_BACKEND);
   const rows = [];
-
+  const settings = await getAppSettings(process.env.METRICS_BACKEND);
   await addAudit('metrics_fetch', { count: rows.length, backend: settings.backend });
 
   return res.status(200).json({ ok: true, backend: settings.backend, rows });
