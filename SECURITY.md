@@ -1,1 +1,5 @@
-Service role key is server-side only. Route guards enforced on server by role.
+# Security
+
+- Report issues to security@example.com
+- Use env vars for secrets
+- Keep deps patched
