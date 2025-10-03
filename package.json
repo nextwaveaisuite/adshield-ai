@@ -1,36 +1,19 @@
 {
-  "name": "craigslist-compliant-ad-assistant",
-  "version": "1.1.0",
+  "name": "adshield-ai",
+  "version": "1.0.0",
   "private": true,
+  "description": "Clean Next.js starter for AdShield AI (no DB deps) — deploy-ready on Vercel.",
+  "engines": {
+    "node": ">=20 <21"
+  },
   "scripts": {
-    "dev": "NODE_OPTIONS='--require ./otel-register.cjs' next dev -p 3000",
+    "dev": "next dev",
     "build": "next build",
-    "start": "NODE_OPTIONS='--require ./otel-register.cjs' next start -p 3000",
-    "db:up": "docker compose up -d",
-    "db:down": "docker compose down",
-    "db:seed:local": "node scripts/seed_local.mjs",
-    "db:seed:supabase": "node scripts/seed_supabase.mjs",
-    "vercel:link": "vercel link --confirm",
-    "env:pull": "bash scripts/vercel-env-pull.sh",
-    "env:push:preview": "bash scripts/vercel-env-push.sh .env.local preview",
-    "env:push:prod": "bash scripts/vercel-env-push.sh .env.local production"
+    "start": "next start"
   },
   "dependencies": {
     "next": "14.2.5",
     "react": "18.2.0",
-    "react-dom": "18.2.0",
-    "pg": "^8.11.3",
-    "cookie": "^0.6.0",
-    "@upstash/redis": "^1.31.4",
-    "next-auth": "^4.24.7",
-    "@opentelemetry/api": "^1.8.0",
-    "@opentelemetry/sdk-node": "^0.51.1",
-    "@opentelemetry/exporter-trace-otlp-http": "^0.51.1",
-    "chart.js": "^4.4.1"
-  },
-  "devDependencies": {
-    "vercel": "^33.7.0",
-    "@commitlint/cli": "^19.4.0",
-    "@commitlint/config-conventional": "^19.2.2"
+    "react-dom": "18.2.0"
   }
 }
