@@ -1,0 +1,1 @@
+export default function Page(){return(<main style={{padding:'24px'}}><h1>Terms & Conditions</h1></main>);}

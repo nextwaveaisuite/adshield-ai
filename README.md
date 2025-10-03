@@ -1,41 +1,33 @@
-# AdShield AI — Full Pack (JS) — Packs I + I-1
+# AdShield AI — FULL MIRROR (JS) with Invite Flow
+**Built:** 2025-10-03T08:20:17
 
-**Date:** 2025-10-03
-
-This is a clean, consolidated JS project matching your routes **and** including the **Invite Acceptance Flow**.
-
-## What’s included
-- Teams & Roles (RBAC) via Supabase
-- Invite Flow: `/api/invite` + `/join`
+This zip mirrors your structure exactly and bakes in:
+- Teams & Roles (RBAC)
+- Invite creation: `POST /api/invite`
+- Invite acceptance: `/join?token=...` (new page)
 - Admin pages: `/admin`, `/admin/compliance`, `/admin/usage`, `/admin/team`
-- Legal/website pages: `/privacy`, `/terms`, `/disclaimer`, `/contact`, `/about`, `/website`
-- Core endpoints: `/api/health`, `/api/metrics`
-- NextAuth (Credentials demo mode) — swap later for email magic links
-- SQL schema under `sql/schema.sql` (safe to re-run)
+- Legal & website pages
 
 ## Environment Variables (Vercel → Project Settings)
 - `SUPABASE_URL`
 - `SUPABASE_SERVICE_ROLE`
-- `NEXTAUTH_URL` (e.g., `https://signals.nextwaveaisuite.com`)
-- `NEXTAUTH_SECRET` (generate a random string)
+- `NEXTAUTH_URL` (e.g., `https://your-domain`)
+- `NEXTAUTH_SECRET` (random string)
 
 ## Setup
-1. Upload this repo to GitHub (root of repo).
-2. In Supabase, open SQL editor and run `sql/schema.sql`.
-3. In Vercel, set env vars above; redeploy.
-4. Visit `/login` (demo credentials: any email + any password). Make your email admin:
+1. Upload to GitHub (repo root).
+2. Run SQL in `sql/schema.sql` on Supabase.
+3. Add env vars above and deploy.
+4. Make yourself admin:
 ```sql
 insert into team_members(email, role)
 values ('YOUR_EMAIL@domain.com','admin')
 on conflict (email) do update set role='admin';
 ```
 
-## Invite test
+## Test
+- Create invite:
 ```bash
-curl -s -X POST https://<your-host>/api/invite   -H "Content-Type: application/json"   -d '{"email":"teammate@example.com","role":"analyst"}'
-# copy joinUrl → open in a browser → login → role applied
+curl -s -X POST https://<host>/api/invite   -H "Content-Type: application/json"   -d '{"email":"teammate@example.com","role":"analyst"}'
 ```
-
----
-
-**Note:** This is a minimal, clean baseline. You can drop it in as a full replacement if your current repo is messy.
+- Open `joinUrl` → login → user role applied.

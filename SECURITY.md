@@ -1,5 +1,3 @@
-# Security
-
-- All admin routes check role on the server.
-- Invites use single-use tokens stored in `invites` table.
-- Avoid exposing `SUPABASE_SERVICE_ROLE` to client — all usage here is server-side only.
+# Security Notes
+- Service role key used only server-side.
+- Admin/analyst route guards enforced on server via NextAuth session role.
