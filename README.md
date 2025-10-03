@@ -1,19 +1,22 @@
-# AdShield AI — Clean Full Source (Pages Router)
+# AdShield AI — Clean Core + Auth (Merged Feature Pack A)
 
-This is a **clean, compiling Next.js 14** project ready for Vercel.
+This is your working clean base + NextAuth integration + protected Admin page.
+It compiles on Vercel and preserves your original product purpose, while adding proper auth plumbing.
 
-- No duplicate imports
-- Minimal API routes (`/api/health`, `/api/collect`, `/api/metrics`)
-- Safe `/admin` page **without** next-auth (build will not prerender-fail)
-- Node 20
+## What's included
+- Next.js 14 (Pages Router)
+- NextAuth with Credentials provider (simple demo)
+- SessionProvider in `_app.js`
+- `/admin` protected with SSR (redirects to `/login` if not authenticated)
+- Minimal APIs: `/api/collect`, `/api/metrics`, `/api/health`
+- Stubs for `lib/rate`, `lib/audit`, `lib/abuse`
 
-## Quick Deploy (GitHub → Vercel)
-1. Delete existing files in your repo (keep the repo).
-2. Upload the **contents** of this folder (preserve structure).
-3. Commit to `main`.
-4. In Vercel: Project Settings → **Node.js Version: `20.x`**.
-5. Deploy. Confirm the commit hash matches your latest.
+## Environment
+Create `.env` from `.env.example`:
+- `NEXTAUTH_SECRET` — use any strong secret (generated for you below as a placeholder).
+- `NEXTAUTH_URL` — Vercel URL (e.g., https://your-project.vercel.app)
 
-## Notes
-- `/admin` is implemented without next-auth and guarded via **SSR** (no prerender issues).
-- When you're ready to add auth, we can integrate NextAuth later.
+## Deploy Steps
+1. Upload these files to your GitHub repo (replace existing).
+2. Set env vars in Vercel: `NEXTAUTH_SECRET`, `NEXTAUTH_URL`.
+3. Deploy. Visit `/login` to sign in with the credentials form (demo only).
