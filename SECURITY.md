@@ -1,1 +1,1 @@
-Server-only usage of SUPABASE_SERVICE_ROLE. RBAC enforced server-side.
+Service role key is server-side only. Route guards enforced on server by role.

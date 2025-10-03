@@ -1,0 +1,1 @@
+export default function Website(){return(<main style={{padding:'24px'}}><h1>AdShield AI — Signal Compliance & Traffic Intelligence</h1><p>Protect spend. Boost signal. Stay compliant.</p><a href="/pricing">See pricing</a></main>);}

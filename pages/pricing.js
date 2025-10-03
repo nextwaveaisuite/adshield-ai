@@ -1,0 +1,1 @@
+export default function Pricing(){return(<main style={{padding:'24px'}}><h1>Pricing</h1><ul><li>Free — 1,000 credits / month</li><li>Pro — 50,000 credits / month</li><li>Elite — 500,000 credits / month</li></ul></main>);}
