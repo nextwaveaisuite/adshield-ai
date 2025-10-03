@@ -1,10 +1,5 @@
 {
   "buildCommand": "npm run build",
   "installCommand": "npm install",
-  "outputDirectory": ".next",
-  "functions": {
-    "api/**/*": {
-      "maxDuration": 10
-    }
-  }
+  "outputDirectory": ".next"
 }
