@@ -1,3 +1,3 @@
-# AdShield AI — Pack G (Credits & Quotas)
+# AdShield AI — Pack H (Onboarding & Seed Data)
 
-Deploy on Vercel. Run `sql/schema.sql` in Supabase.
+Includes /api/seed, /admin/usage, filters on dashboard, and improved credit banners.
