@@ -1,22 +1,73 @@
-# AdShield AI — Clean Core + Auth (Merged Feature Pack A)
+# AdShield AI — Feature Pack B (Database + Metrics Engine, Supabase)
 
-This is your working clean base + NextAuth integration + protected Admin page.
-It compiles on Vercel and preserves your original product purpose, while adding proper auth plumbing.
+This pack builds on the clean core + auth and adds **real data storage**:
+- `/api/collect` writes events into Supabase
+- `/api/metrics` returns aggregated metrics
 
-## What's included
-- Next.js 14 (Pages Router)
-- NextAuth with Credentials provider (simple demo)
-- SessionProvider in `_app.js`
-- `/admin` protected with SSR (redirects to `/login` if not authenticated)
-- Minimal APIs: `/api/collect`, `/api/metrics`, `/api/health`
-- Stubs for `lib/rate`, `lib/audit`, `lib/abuse`
+## One-time setup
+1) Create a Supabase project.
+2) In Supabase SQL Editor, run `sql/schema.sql` (from this repo) to create the `events` table and indexes.
+3) In Vercel → Project → Environment Variables, set:
+   - `SUPABASE_URL` — from Supabase settings
+   - `SUPABASE_SERVICE_ROLE` — **Service Role key** (server-only; never exposed to client)
+   - `NEXTAUTH_SECRET` — keep your existing value (from Feature Pack A)
+   - `NEXTAUTH_URL` — optional; Vercel sets automatically
 
-## Environment
-Create `.env` from `.env.example`:
-- `NEXTAUTH_SECRET` — use any strong secret (generated for you below as a placeholder).
-- `NEXTAUTH_URL` — Vercel URL (e.g., https://your-project.vercel.app)
+## Deploy
+1) Upload these files to GitHub (replace existing contents).
+2) Commit to `main` → Vercel will deploy.
+3) Test:
+   - POST `/api/collect` with a JSON body (see examples below)
+   - GET `/api/metrics` to see grouped aggregates
 
-## Deploy Steps
-1. Upload these files to your GitHub repo (replace existing).
-2. Set env vars in Vercel: `NEXTAUTH_SECRET`, `NEXTAUTH_URL`.
-3. Deploy. Visit `/login` to sign in with the credentials form (demo only).
+## POST /api/collect sample payloads
+```bash
+curl -X POST https://YOUR-APP.vercel.app/api/collect \
+  -H "Content-Type: application/json" \
+  -d '{
+    "event": "post",
+    "payload": { "title": "Sofa - great condition" },
+    "meta": {
+      "country": "US", "state": "CA", "zip": "94107",
+      "offer_type": "furniture", "user_id": "u_123"
+    }
+  }'
+```
+
+```bash
+curl -X POST https://YOUR-APP.vercel.app/api/collect \
+  -H "Content-Type: application/json" \
+  -d '{
+    "event": "click",
+    "payload": { "ad_id": "ad_42" },
+    "meta": {
+      "country": "US", "state": "CA", "zip": "94107",
+      "offer_type": "furniture", "user_id": "u_123"
+    }
+  }'
+```
+
+## GET /api/metrics
+```bash
+curl https://YOUR-APP.vercel.app/api/metrics
+```
+Returns rows like:
+```json
+[
+  {
+    "country": "US",
+    "state": "CA",
+    "zip": "94107",
+    "offer_type": "furniture",
+    "posts": 12,
+    "clicks": 35,
+    "leads": 7,
+    "sales": 2
+  }
+]
+```
+
+## Notes
+- Server code uses the **Service Role** key only on the server; no client usage.
+- If env vars are missing, endpoints fail gracefully with `500` and a helpful message.
+- You can extend the schema with additional dimensions (weekday/hour/device/ip) later.
