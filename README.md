@@ -1,4 +1,9 @@
 ![CI](https://github.com/OWNER/REPO/actions/workflows/ci.yml/badge.svg)
+
+🛡️ AdShield AI – Craigslist-Compliant Affiliate Ad Automation
+
+AdShield AI is an advanced SaaS tool that helps affiliate marketers create, optimize, and deploy Craigslist-compliant ads automatically. Powered by AI, it analyzes top-performing posts across countries, states, cities, and zip codes, then rewrites your content to meet compliance standards — even from a single keyword like “make money online.” Built-in abuse protection, admin controls, and a deep analytics dashboard make AdShield AI a secure and scalable solution for growing affiliate campaigns without violating platform policies.
+
 # Craigslist-Compliant Ad Assistant (Deployable)
 
 Zero-touch, **Craigslist-compliant** workflow. No scraping, no rule evasion.
