@@ -1,1 +1,0 @@
-export default function Page(){return (<main style={{fontFamily:'system-ui, Arial, sans-serif',padding:24,maxWidth:900,margin:'0 auto'}}><h1>Privacy Policy</h1><div style={{marginTop:12,lineHeight:1.65}} dangerouslySetInnerHTML={{__html:`<p>Starter policy. Replace with your legal copy.</p>`}}></div></main>);}

@@ -1,1 +1,0 @@
-export default function Page(){return (<main style={{fontFamily:'system-ui, Arial, sans-serif',padding:24,maxWidth:900,margin:'0 auto'}}><h1>AdShield AI — Website</h1><div style={{marginTop:12,lineHeight:1.65}} dangerouslySetInnerHTML={{__html:`<p>Landing page placeholder.</p>`}}></div></main>);}

@@ -1,1 +1,0 @@
-export default function Page(){return (<main style={{fontFamily:'system-ui, Arial, sans-serif',padding:24,maxWidth:900,margin:'0 auto'}}><h1>Contact Us</h1><div style={{marginTop:12,lineHeight:1.65}} dangerouslySetInnerHTML={{__html:`<p>Email: <a href="mailto:support@example.com">support@example.com</a></p>`}}></div></main>);}
