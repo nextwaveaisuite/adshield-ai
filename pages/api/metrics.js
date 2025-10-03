@@ -10,7 +10,6 @@ import { isBlocked } from '../../../lib/abuse';
 
 async function getAppSettings(backend) {
   try {
-    // Restore your original settings fetch here if you had one.
     return {
       backend: backend || process.env.METRICS_BACKEND || 'vercel',
       enabled: true
@@ -27,7 +26,6 @@ export default async function handler(req, res) {
       return res.status(405).json({ ok: false, error: 'Method Not Allowed' });
     }
 
-    // Rate limit (keep your original signature if different)
     if (typeof rateLimit === 'function') {
       await rateLimit(req, res);
     }
@@ -38,16 +36,14 @@ export default async function handler(req, res) {
 
     const settings = await getAppSettings(process.env.METRICS_BACKEND);
 
-    // TODO: fetch metrics from your chosen backend.
-    // Replace this stub with your real query logic (Supabase or Vercel Postgres).
-    const rows = []; // <- keep your real result structure here
+    // TODO: fetch metrics from your chosen backend. Replace [] with your real query results.
+    const rows = [];
 
-    // Audit (non-blocking)
     if (typeof addAudit === 'function') {
       try {
         await addAudit('metrics_fetch', { count: rows.length, backend: settings.backend });
       } catch {
-        // ignore audit errors
+        // non-blocking
       }
     }
 
