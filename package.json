@@ -2,10 +2,6 @@
   "name": "adshield-ai",
   "version": "1.0.0",
   "private": true,
-  "description": "Clean Next.js starter for AdShield AI (no DB deps) — deploy-ready on Vercel.",
-  "engines": {
-    "node": ">=20 <21"
-  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -14,6 +10,12 @@
   "dependencies": {
     "next": "14.2.5",
     "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "react-dom": "18.2.0",
+    "next-auth": "^4.24.7",
+    "chart.js": "^4.4.4",
+    "cookie": "^0.6.0",
+    "@supabase/supabase-js": "^2.45.4",
+    "@vercel/postgres": "^0.9.0"
   }
 }
+
