@@ -1,3 +1,1 @@
-# AdShield AI — Pack H (Onboarding & Seed Data)
-
-Includes /api/seed, /admin/usage, filters on dashboard, and improved credit banners.
+# AdShield AI — Pack I (Teams & Roles + Website Pages)
