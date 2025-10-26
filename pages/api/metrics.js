@@ -1,16 +1,38 @@
+// pages/api/metrics.js
+import { getSupabaseAdminOrNull } from '../../lib/supabaseAdmin';
 
-import { rateLimit } from '../../lib/rate'; import { addAudit } from '../../lib/audit'; import { isBlocked } from '../../lib/abuse';
-import { getServerSupabase } from '../../lib/db';
-export default async function handler(req,res){
-  if(req.method!=='GET'){ res.setHeader('Allow',['GET']); return res.status(405).json({ok:false,error:'Method Not Allowed'}); }
-  if(!(await rateLimit(req,res,{windowSec:30,max:120}))) return; if(isBlocked(req)) return res.status(429).json({ok:false,error:'Blocked by abuse guard'});
-  const supabase=getServerSupabase(); if(!supabase) return res.status(500).json({ ok:false, error:'Server misconfigured: missing SUPABASE_URL / SUPABASE_SERVICE_ROLE' });
-  let { data, error } = await supabase.from('metrics_view').select('*').limit(1000);
-  if(error && error.code==='PGRST116'){ const { data: evts, error: e2 } = await supabase.from('events').select('event,country,state,zip,offer_type').limit(5000);
-    if(e2) return res.status(500).json({ ok:false, error:'DB query failed' });
-    const key=(r)=>[r.country||'NA',r.state||'NA',r.zip||'NA',r.offer_type||'NA'].join('|'); const map=new Map();
-    for(const r of evts){ const k=key(r); if(!map.has(k)) map.set(k,{country:r.country||'NA',state:r.state||'NA',zip:r.zip||'NA',offer_type:r.offer_type||'NA',posts:0,clicks:0,leads:0,sales:0});
-      const row=map.get(k); if(r.event==='post') row.posts++; else if(r.event==='click') row.clicks++; else if(r.event==='lead') row.leads++; else if(r.event==='sale') row.sales++; }
-    data=Array.from(map.values()); }
-  await addAudit('metrics_fetch',{ count: data?.length||0 }); return res.status(200).json({ ok:true, rows: data||[] });
+export default async function handler(req, res) {
+  const supabase = getSupabaseAdminOrNull();
+  const { country = '', state = '', offer = '', sort = 'recent' } = req.query;
+
+  if (!supabase) {
+    return res.status(200).json({ rows: [] });
+  }
+
+  let query = supabase.from('events').select('event, meta->>country, meta->>state, meta->>offer');
+  if (country) query = query.eq('meta->>country', country);
+  if (state) query = query.eq('meta->>state', state);
+  if (offer) query = query.eq('meta->>offer', offer);
+
+  const { data, error } = await query.limit(5000);
+  if (error) return res.status(400).json({ error: error.message });
+
+  const map = new Map();
+  for (const row of data || []) {
+    const c = row['meta->>country'] || '';
+    const s = row['meta->>state'] || '';
+    const o = row['meta->>offer'] || '';
+    const key = `${c}|${s}|${o}`;
+    if (!map.has(key)) map.set(key, { country: c, state: s, offer: o, posts: 0, clicks: 0, leads: 0, sales: 0 });
+    const obj = map.get(key);
+    if (row.event === 'post') obj.posts++;
+    else if (row.event === 'click') obj.clicks++;
+    else if (row.event === 'lead') obj.leads++;
+    else if (row.event === 'sale') obj.sales++;
+  }
+
+  let rows = [...map.values()];
+  const sorters = { recent:(a,b)=>0, posts:(a,b)=>b.posts-a.posts, clicks:(a,b)=>b.clicks-a.clicks, leads:(a,b)=>b.leads-a.leads, sales:(a,b)=>b.sales-a.sales };
+  rows.sort(sorters[sort] || sorters.recent);
+  return res.status(200).json({ rows });
 }
